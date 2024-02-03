@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>My Audio</title>
+</head>
+<body>
+  <script type="text/javascript">
+    window.onload = function() {
+      navigator.mediaDevices.getUserMedia({ audio: true })
+        .then(function(stream) {
+          var audio = new Audio('DreamsByLostSky.mp3');
+          audio.srcObject = stream;
+          audio.play();
+        })
+        .catch(function(err) {
+          console.log('The following getUserMedia error occurred: ' + err);
+        });
+    }
+  </script>
+</body>
+</html>
