@@ -1,21 +1,58 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>My Audio</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Record and Play Audio</title>
 </head>
 <body>
-  <script type="text/javascript">
-    window.onload = function() {
-      navigator.mediaDevices.getUserMedia({ audio: true })
-        .then(function(stream) {
-          var audio = new Audio('DreamsByLostSky.mp3');
-          audio.srcObject = stream;
-          audio.play();
-        })
-        .catch(function(err) {
-          console.log('The following getUserMedia error occurred: ' + err);
-        });
-    }
-  </script>
+<h1>Record and Play Audio</h1>
+<button id="recordButton">Record</button>
+<button id="stopButton">Stop</button>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Ask for microphone permission
+  navigator.mediaDevices.getUserMedia({ audio: true })
+    .then(function(stream) {
+      // Create MediaRecorder instance to record audio
+      const mediaRecorder = new MediaRecorder(stream);
+      let chunks = [];
+
+      // Start recording when the MediaRecorder is ready
+      mediaRecorder.onstart = function() {
+        chunks = [];
+      };
+
+      // Collect recorded chunks
+      mediaRecorder.ondataavailable = function(e) {
+        chunks.push(e.data);
+      };
+
+      // Stop recording and play back the recorded audio
+      mediaRecorder.onstop = function() {
+        const blob = new Blob(chunks, { type: 'audio/wav' });
+        const audioURL = URL.createObjectURL(blob);
+        
+        // Create an Audio element and set the source to the recorded audio
+        const audio = new Audio(audioURL);
+        audio.play();
+      };
+
+      // Start recording when the user clicks a button
+      document.getElementById('recordButton').addEventListener('click', function() {
+        mediaRecorder.start();
+      });
+
+      // Stop recording when the user clicks a button
+      document.getElementById('stopButton').addEventListener('click', function() {
+        mediaRecorder.stop();
+      });
+    })
+    .catch(function(err) {
+      console.error('Error accessing microphone:', err);
+    });
+});
+</script>
 </body>
 </html>
